@@ -36,6 +36,11 @@ application {
     mainClass = 'dependencies.Dependencies'
 }
 
+compileJava {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
+
 tasks.named('test') {
     // Use junit platform for unit tests.
     useJUnitPlatform()
