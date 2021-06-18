@@ -5,6 +5,7 @@ import java.io.PrintStream;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -66,10 +67,15 @@ public class Dependencies {
 				output.println("j option was used with value " + cmd.getOptionValue("j"));
 			}
 
+		} catch (MissingOptionException e) {
+			output.println("Argument manquant");
+			System.exit(0);
+
 		} catch (ParseException e) {
 			output.println("Erreur lors de la lecture des arguments de la ligne de commande.");
 			e.printStackTrace();
 			System.exit(1);
+
 		}
 
 		// File projectRootFolder = new File();
