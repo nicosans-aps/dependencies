@@ -1,4 +1,4 @@
-package main.java.dependencies;
+package dependencies;
 
 public class JdepsWrapperException extends Exception {
 	/**

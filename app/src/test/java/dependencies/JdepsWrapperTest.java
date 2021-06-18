@@ -1,67 +1,76 @@
-package test.java.dependencies;
+package dependencies;
 
-import java.io.File;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import main.java.dependencies.JdepsWrapper;
-import main.java.dependencies.JdepsWrapperException;
-
 class JdepsWrapperTest {
 
-	static final File NON_EXIST_FILE = new File("nonexist");
-	static final File EXIST_FILE = new File("exist");
-	static final File EXIST_JAR = new File("test.jar");
+	static final Path NON_EXIST_PATH = Paths.get("nonexist");
+	static final Path EXIST_PATH = Paths.get("exist");
+	static final Path EXIST_JAR_PATH = Paths.get("test.jar");
 
 	@BeforeAll
 	static void createTestFiles() throws IOException {
-		EXIST_FILE.createNewFile();
-		EXIST_FILE.deleteOnExit();
-
-		EXIST_JAR.createNewFile();
-		EXIST_JAR.deleteOnExit();
+		Files.createFile(EXIST_PATH);
+		Files.createFile(EXIST_JAR_PATH);
 	}
 
 	@Test
-	void whenNonExistJdepExecutableThenThrowsIOException() {
+	void whenNonExistJdepExecutableThenThrowsJdepsWrapperException() {
 
-		Assertions.assertThrows(IOException.class, () -> {
-			new JdepsWrapper(NON_EXIST_FILE);
+		Exception exception = assertThrows(JdepsWrapperException.class, () -> {
+			JdepsWrapper jw = new JdepsWrapper(NON_EXIST_PATH);
 		});
-	}
-
-	@Test
-	void whenNonExistClassPathThenThrowsIOException() {
-
-		Exception exception = Assertions.assertThrows(JdepsWrapperException.class, () -> {
-			JdepsWrapper jw = new JdepsWrapper(EXIST_FILE);
-			jw.addClassPath(NON_EXIST_FILE);
-		});
-
-		String expectedMessage = "For input string";
+		String expectedMessage = " is missing";
 		String actualMessage = exception.getMessage();
 
-		Assertions.assertTrue(actualMessage.contains(expectedMessage));
+		assertTrue(actualMessage.contains(expectedMessage));
 	}
 
 	@Test
-	void whenNotEndingByJarClassPathThenThrowsIOException() {
-
-		Assertions.assertThrows(IOException.class, () -> {
-			JdepsWrapper jw = new JdepsWrapper(EXIST_FILE);
-			jw.addClassPath(EXIST_FILE);
+	void whenNonExistClassPathThenThrowsJdepsWrapperException() throws JdepsWrapperException {
+		JdepsWrapper jw = new JdepsWrapper(EXIST_PATH);
+		Exception exception = assertThrows(JdepsWrapperException.class, () -> {
+			jw.addClassPath(NON_EXIST_PATH);
 		});
+
+		String expectedMessage = " is missing";
+		String actualMessage = exception.getMessage();
+
+		assertTrue(actualMessage.contains(expectedMessage));
 	}
 
 	@Test
-	void whenEndingByJarClassPathThen() {
+	void whenNotEndingByJarClassPathThenThrowsJdepsWrapperException() throws JdepsWrapperException {
+		JdepsWrapper jw = new JdepsWrapper(EXIST_PATH);
+		Exception exception = assertThrows(JdepsWrapperException.class, () -> {
 
-		Assertions.assertThrows(IOException.class, () -> {
-			JdepsWrapper jw = new JdepsWrapper(EXIST_FILE);
-			jw.addClassPath(EXIST_FILE);
+			jw.addClassPath(EXIST_PATH);
 		});
+		String expectedMessage = " doesn't end with .jar";
+		String actualMessage = exception.getMessage();
+
+		assertTrue(actualMessage.contains(expectedMessage));
+	}
+
+	@AfterAll
+	static void deleteTestFiles() {
+		try {
+			Files.deleteIfExists(EXIST_PATH);
+			Files.deleteIfExists(EXIST_JAR_PATH);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 }

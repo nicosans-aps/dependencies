@@ -1,4 +1,4 @@
-package main.java.dependencies;
+package dependencies;
 
 import java.io.File;
 import java.util.Set;
