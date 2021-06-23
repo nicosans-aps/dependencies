@@ -15,7 +15,7 @@ public class JdepsWrapper {
 
 	private void throwExceptionIfPathMissing(Path path) throws JdepsWrapperException {
 		if (!Files.exists(path)) {
-			throw new JdepsWrapperException(path.getFileName() + " is missing");
+			throw new JdepsWrapperException(path.getFileName() + " est manquant");
 		}
 	}
 
@@ -25,12 +25,14 @@ public class JdepsWrapper {
 	}
 
 	/**
-	 * Analyse le
+	 * Appel la commande jdeps du jdk pour obtenir les dépendances des classes
+	 * contenues dans une archive jar. L'existence de l'archive rar est vérifiée
+	 * avant l'appel de jdeps
 	 * 
 	 * @param jarPath
 	 * @throws JdepsWrapperException
 	 */
-	public void analyse(Path jarPath) throws JdepsWrapperException {
+	public void analize(Path jarPath) throws JdepsWrapperException {
 		throwExceptionIfPathMissing(jdepsExecutable);
 		run(jarPath);
 	}
@@ -39,7 +41,7 @@ public class JdepsWrapper {
 		throwExceptionIfPathMissing(classPath);
 
 		if (!classPath.endsWith(".jar")) {
-			throw new JdepsWrapperException(classPath.getFileName() + " doesn't end with .jar");
+			throw new JdepsWrapperException(classPath.getFileName() + "  n'est pas un fichier .jar");
 		}
 		this.classPaths.add(classPath);
 	}

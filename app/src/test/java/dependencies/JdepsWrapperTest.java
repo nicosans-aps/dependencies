@@ -30,7 +30,7 @@ class JdepsWrapperTest {
 		Exception exception = assertThrows(JdepsWrapperException.class, () -> {
 			JdepsWrapper jw = new JdepsWrapper(NON_EXIST_PATH);
 		});
-		String expectedMessage = " is missing";
+		String expectedMessage = " est manquant";
 		String actualMessage = exception.getMessage();
 
 		assertTrue(actualMessage.contains(expectedMessage));
@@ -43,7 +43,7 @@ class JdepsWrapperTest {
 			jw.addClassPath(NON_EXIST_PATH);
 		});
 
-		String expectedMessage = " is missing";
+		String expectedMessage = " est manquant";
 		String actualMessage = exception.getMessage();
 
 		assertTrue(actualMessage.contains(expectedMessage));
@@ -56,7 +56,7 @@ class JdepsWrapperTest {
 
 			jw.addClassPath(EXIST_PATH);
 		});
-		String expectedMessage = " doesn't end with .jar";
+		String expectedMessage = " n'est pas un fichier .jar";
 		String actualMessage = exception.getMessage();
 
 		assertTrue(actualMessage.contains(expectedMessage));
