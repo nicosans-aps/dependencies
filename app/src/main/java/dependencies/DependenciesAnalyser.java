@@ -11,70 +11,84 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Cette classe est chargée de vérifier les paramètres
+ * Cette classe est chargée de vérifier les paramètres et de gérer l'exécution
+ * de l'analyse
  * 
  * @author nicol
  *
  */
-public class DependenciesAnalizer {
+public class DependenciesAnalyser {
 	private Path projectRootPath;
 	private Set<Path> jarFilePaths = new HashSet<>();
 
-	private void checkJarFilePaths() throws DependenciesAnalizerException {
+	/**
+	 * Cette méthode vérifie l'existence de tous les fichiers Jar à analyser. Elle
+	 * lève un des fichier jar n'est pas accessible
+	 * 
+	 * @throws DependenciesAnalyserException
+	 */
+	private void checkJarFilePaths() throws DependenciesAnalyserException {
 		for (Path p : this.jarFilePaths) {
 			if (Files.notExists(p)) {
-				throw new DependenciesAnalizerException("Le fichier .jar");
+				throw new DependenciesAnalyserException("Le fichier .jar " + p.toString() + " n'existe pas.");
 			}
 		}
 	}
 
-	private void checkProjectRootPath() throws DependenciesAnalizerException {
+	/**
+	 * Cette méthode vérifie l'existence du dossier racine du projet Elle lève une
+	 * exception si le dossier n'est pas accessible
+	 * 
+	 * @throws DependenciesAnalyserException
+	 */
+	private void checkProjectRootPath() throws DependenciesAnalyserException {
 		if (Files.notExists(this.projectRootPath)) {
-			throw new DependenciesAnalizerException(
+			throw new DependenciesAnalyserException(
 					"Le dossier racine du projet " + this.projectRootPath.toString() + " n'existe pas");
 		}
 	}
 
 	/**
 	 * Retourne un set de Path des fichiers .jar présents dans l'arborescence du
-	 * projet
+	 * projet (utilisés comme classpath par l'outil jdeps)
 	 * 
 	 * @return
 	 */
 	private Set<Path> getClassPathsFromRootPath() {
 		Set<Path> classPaths = new HashSet<>();
+
 		try (Stream<Path> pathStream = Files.walk(this.projectRootPath)) {
-			classPaths = pathStream.filter(x -> x.getFileName().endsWith(".jar")).collect(Collectors.toSet());
+			classPaths = pathStream.filter(x -> x.endsWith(".jar")).collect(Collectors.toSet());
 		} catch (IOException e) {
 		}
 		return classPaths;
 	}
 
-	DependenciesAnalizer(String projectRootPath, String[] jarFilePaths) {
+	DependenciesAnalyser(String projectRootPath, String[] jarFilePaths) {
 		this.projectRootPath = Paths.get(projectRootPath);
 		this.jarFilePaths = Arrays.stream(jarFilePaths).map(x -> Paths.get(x)).collect(Collectors.toSet());
 	}
 
-	public void analize() throws DependenciesAnalizerException {
+	public void analyse() throws DependenciesAnalyserException {
 		this.checkJarFilePaths();
 
 		this.checkProjectRootPath();
 		try {
-			// defini le chemin de la commande jdeps dans le constructeur
-			JdepsWrapper jw = new JdepsWrapper(Paths.get("jdeps"));
+
+			JdepsWrapper jw = new JdepsWrapper();
 
 			// ajout des fichiers jar détectés dans le dossier projet
 			for (Path p : this.getClassPathsFromRootPath()) {
 				jw.addClassPath(p);
 			}
 
-			// appel de la commande pour chaque jar
+			// appel de la commande pour chaque jar à analyser
 			for (Path p : this.jarFilePaths) {
 
-				jw.analize(p);
+				System.out.println(jw.analyse(p));
 			}
 		} catch (JdepsWrapperException e) {
-			throw new DependenciesAnalizerException("Erreur lors de l'appel à la commande jdeps");
+			throw new DependenciesAnalyserException("Erreur lors de l'appel à la commande jdeps : " + e.getMessage());
 		}
 
 	}

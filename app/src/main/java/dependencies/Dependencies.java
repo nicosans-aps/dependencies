@@ -7,6 +7,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -59,13 +60,13 @@ public class Dependencies {
 		printWriter.flush();
 	}
 
-	private static void analize(String projectPath, String[] jarFiles) {
-		DependenciesAnalizer da = new DependenciesAnalizer(projectPath, jarFiles);
+	private static void analyse(String projectPath, String[] jarFiles) {
+		DependenciesAnalyser da = new DependenciesAnalyser(projectPath, jarFiles);
 		try {
 
-			da.analize();
+			da.analyse();
 
-		} catch (DependenciesAnalizerException e) {
+		} catch (DependenciesAnalyserException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -92,16 +93,19 @@ public class Dependencies {
 				printHelp();
 			}
 
-			else if (!cmd.hasOption('j')) {
+			else if (!cmd.hasOption('j') || (cmd.getOptionValues('j').length == 0)) {
 				output.println("L'argument -j correspondant au chemin du ou des fichiers .jar racines est manquant.");
 			}
 
-			else if (!cmd.hasOption('p')) {
+			else if (!cmd.hasOption('p') || cmd.getOptionValue('p').isEmpty()) {
 				output.println("L'argument -p correspondant au chemin du projet à analyser est manquant.");
 
 			} else {
-				analize(cmd.getOptionValue('p'), cmd.getOptionValues('j'));
+				analyse(cmd.getOptionValue('p'), cmd.getOptionValues('j'));
 			}
+
+		} catch (MissingArgumentException e) {
+			output.println("L'argument de l'option " + e.getOption().getOpt() + " est manquant.");
 
 		} catch (MissingOptionException e) {
 			printHelp();

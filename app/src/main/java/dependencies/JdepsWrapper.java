@@ -19,9 +19,26 @@ public class JdepsWrapper {
 		}
 	}
 
-	public JdepsWrapper(Path jdepsExecutable) throws JdepsWrapperException {
-		throwExceptionIfPathMissing(jdepsExecutable);
-		this.jdepsExecutable = jdepsExecutable;
+	private void throwExceptionIfJdepsMissing() throws JdepsWrapperException {
+		Runtime rt = Runtime.getRuntime();
+		int exitValue = 0;
+
+		String[] commandAndArguments = { "cmd", "/C", "jdeps --version" };
+
+		try {
+			Process p = rt.exec(commandAndArguments);
+			p.waitFor();
+			exitValue = p.exitValue();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		if (exitValue != 0) {
+			throw new JdepsWrapperException("La commande jdeps est inconnue.");
+		}
+	}
+
+	public JdepsWrapper() throws JdepsWrapperException {
+		throwExceptionIfJdepsMissing();
 	}
 
 	/**
@@ -32,33 +49,40 @@ public class JdepsWrapper {
 	 * @param jarPath
 	 * @throws JdepsWrapperException
 	 */
-	public void analize(Path jarPath) throws JdepsWrapperException {
-		throwExceptionIfPathMissing(jdepsExecutable);
-		run(jarPath);
+	public String analyse(Path jarPath) {
+
+		return execute(jarPath);
+
 	}
 
 	public void addClassPath(Path classPath) throws JdepsWrapperException {
 		throwExceptionIfPathMissing(classPath);
 
-		if (!classPath.endsWith(".jar")) {
-			throw new JdepsWrapperException(classPath.getFileName() + "  n'est pas un fichier .jar");
+		if (!classPath.toString().endsWith(".jar")) {
+			throw new JdepsWrapperException(classPath.getFileName() + " n'est pas un fichier .jar");
 		}
 		this.classPaths.add(classPath);
 	}
 
-	private void run(Path jarPath) {
+	protected Set<Path> getClassPaths() {
+		return this.classPaths;
+	}
+
+	private String execute(Path jarPath) {
 		Runtime rt = Runtime.getRuntime();
+		String response = "";
 		String classPathString = this.classPaths.stream().map(Path::toString).collect(Collectors.joining(";"));
 
 		String[] commandAndArguments = { this.jdepsExecutable.toString(), "--classpath", classPathString,
 				jarPath.toString() };
 		try {
 			Process p = rt.exec(commandAndArguments);
-			String response = readProcessOutput(p);
-			System.out.println(response);
+			response = readProcessOutput(p);
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+		return response;
 	}
 
 	/**
