@@ -59,4 +59,13 @@ class JdepsWrapperTest {
 		assertEquals(1, jw.getClassPaths().size(), "Le nombre d'occurence de classpath doit être égale à 1");
 	}
 
+	@Test
+	void whenCorrectParametersThenReturnJdepsMessage() throws JdepsWrapperException {
+		JdepsWrapper jw = new JdepsWrapper();
+
+		jw.addClassPath(EXIST_JAR_PATH);
+		String result = jw.analyse(EXIST_JAR_PATH);
+		assertTrue(!result.isEmpty());
+	}
+
 }

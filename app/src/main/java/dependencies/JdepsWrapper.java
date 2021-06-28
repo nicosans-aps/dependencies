@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class JdepsWrapper {
 
-	private Path jdepsExecutable;
+	private static final String JDEPS_EXEC = "jdeps";
 	private Set<Path> classPaths = new HashSet<>();
 
 	private void throwExceptionIfPathMissing(Path path) throws JdepsWrapperException {
@@ -73,8 +73,7 @@ public class JdepsWrapper {
 		String response = "";
 		String classPathString = this.classPaths.stream().map(Path::toString).collect(Collectors.joining(";"));
 
-		String[] commandAndArguments = { this.jdepsExecutable.toString(), "--classpath", classPathString,
-				jarPath.toString() };
+		String[] commandAndArguments = { "cmd", "/C", JDEPS_EXEC, "--classpath", classPathString, jarPath.toString() };
 		try {
 			Process p = rt.exec(commandAndArguments);
 			response = readProcessOutput(p);
