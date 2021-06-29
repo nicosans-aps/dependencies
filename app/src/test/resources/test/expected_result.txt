@@ -1,0 +1,6 @@
+test.jar -> java.base
+   test                                               -> java.io                                            java.base
+   test                                               -> java.lang                                          java.base
+   test                                               -> java.util                                          java.base
+============================================================================================================================   
+   
