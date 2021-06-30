@@ -1,6 +1,7 @@
 package dependencies;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,9 +51,7 @@ public class JdepsWrapper {
 	 * @throws JdepsWrapperException
 	 */
 	public String analyse(Path jarPath) {
-
 		return execute(jarPath);
-
 	}
 
 	public void addClassPath(Path classPath) throws JdepsWrapperException {
@@ -73,7 +72,8 @@ public class JdepsWrapper {
 		String response = "";
 		String classPathString = this.classPaths.stream().map(Path::toString).collect(Collectors.joining(";"));
 
-		String[] commandAndArguments = { "cmd", "/C", JDEPS_EXEC, "--classpath", classPathString, jarPath.toString() };
+		String[] commandAndArguments = { "cmd", "/C", JDEPS_EXEC, "--recursive", "--multi-release", "base",
+				"--class-path", classPathString, jarPath.toString() };
 		try {
 			Process p = rt.exec(commandAndArguments);
 			response = readProcessOutput(p);
@@ -90,9 +90,10 @@ public class JdepsWrapper {
 	 * 
 	 * @param p
 	 * @return
+	 * @throws IOException
 	 * @throws Exception
 	 */
-	private String readProcessOutput(Process p) throws Exception {
+	private String readProcessOutput(Process p) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		StringBuilder responseBuilder = new StringBuilder();
 		String line;

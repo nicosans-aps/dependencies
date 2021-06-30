@@ -10,11 +10,27 @@ import java.util.Collection;
  *
  */
 public class JavaArchive {
-	private String Name;
+	public String getName() {
+		return name;
+	}
+
+	private String name;
 	private Collection<JavaClass> classes = new ArrayList<>();
 
 	public JavaArchive(String name) {
-		this.Name = name;
+		this.name = name;
+	}
+
+	@Override
+	public int hashCode() {
+		// TODO Auto-generated method stub
+		return super.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		return super.equals(obj);
 	}
 
 }

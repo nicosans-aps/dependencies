@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import dependencies.model.DependenciesGraph;
+
 /**
  * Cette classe est chargée de vérifier les paramètres et de gérer l'exécution
  * de l'analyse
@@ -58,7 +60,7 @@ public class DependenciesAnalyser {
 		Set<Path> classPaths = new HashSet<>();
 
 		try (Stream<Path> pathStream = Files.walk(this.projectRootPath)) {
-			classPaths = pathStream.filter(x -> x.endsWith(".jar")).collect(Collectors.toSet());
+			classPaths = pathStream.filter(x -> x.toString().endsWith(".jar")).collect(Collectors.toSet());
 		} catch (IOException e) {
 		}
 		return classPaths;
@@ -85,7 +87,10 @@ public class DependenciesAnalyser {
 			// appel de la commande pour chaque jar à analyser
 			for (Path p : this.jarFilePaths) {
 
-				System.out.println(jw.analyse(p));
+				String result = jw.analyse(p);
+				DependenciesGraph da = JdepsParser.read(result);
+				System.out.println(result);
+
 			}
 		} catch (JdepsWrapperException e) {
 			throw new DependenciesAnalyserException("Erreur lors de l'appel à la commande jdeps : " + e.getMessage());

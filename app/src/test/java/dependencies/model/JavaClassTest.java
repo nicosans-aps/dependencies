@@ -12,8 +12,8 @@ class JavaClassTest {
 		JavaClass jc = new JavaClass("NewJavaClass");
 
 		assertNotNull(jc, "L'object JavaClass ne doit pas être null.");
-		assertEquals(jc.getName(), "NewJavaClass");
-		assertEquals(jc.toString(), "NewJavaClass");
+		assertEquals("NewJavaClass", jc.getName());
+		assertEquals("NewJavaClass", jc.toString());
 	}
 
 	void whenCompareToJavaClassThenComparaisonValid() {
