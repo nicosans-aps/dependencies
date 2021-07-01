@@ -16,6 +16,7 @@ class JavaClassTest {
 		assertEquals("NewJavaClass", jc.toString());
 	}
 
+	@Test
 	void whenCompareToJavaClassThenComparaisonValid() {
 		JavaClass a1 = new JavaClass("a");
 		JavaClass a2 = new JavaClass("a");

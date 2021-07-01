@@ -1,8 +1,5 @@
 package dependencies.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 /**
  * Représente une archive Java (JAR)
  * 
@@ -15,7 +12,7 @@ public class JavaArchive {
 	}
 
 	private String name;
-	private Collection<JavaClass> classes = new ArrayList<>();
+	// private Collection<JavaClass> classes = new ArrayList<>();
 
 	public JavaArchive(String name) {
 		this.name = name;
@@ -23,14 +20,27 @@ public class JavaArchive {
 
 	@Override
 	public int hashCode() {
-		// TODO Auto-generated method stub
-		return super.hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		// TODO Auto-generated method stub
-		return super.equals(obj);
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		JavaArchive other = (JavaArchive) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
 	}
 
 }
